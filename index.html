@@ -1,0 +1,319 @@
+
+<h2 class="sr-only">PFUND Staff Bakmaha Ulela - Playable Sri Lankan New Year Mini-Games</h2>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+#root{font-family:var(--font-sans);max-width:480px;margin:0 auto;padding:0.5rem 0.75rem 3rem;}
+.hdr{background:#BA7517;padding:1.1rem 1.25rem;border-radius:var(--border-radius-lg);margin-bottom:1rem;}
+.hdr h1{margin:0;font-size:18px;font-weight:500;color:#FFF8F0;}
+.hdr .sub{margin:3px 0 0;font-size:12px;color:#FAC775;}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.1rem;margin-bottom:0.875rem;}
+.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.gc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:0.875rem;cursor:pointer;}
+.gc:active{transform:scale(0.98);}
+.gc.played{border-left:3px solid #1D9E75;}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:7px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;font-size:13px;color:var(--color-text-primary);font-family:var(--font-sans);}
+.btn:hover{background:var(--color-background-secondary);}
+.btn-p{background:#BA7517;color:#FFF8F0;border-color:#854F0B;}
+.btn-g{background:#1D9E75;color:#E1F5EE;border-color:#0F6E56;}
+.btn-b{background:#185FA5;color:#E6F1FB;border-color:#0C447C;}
+.btn-full{width:100%;margin-top:10px;}
+.btn-sm{padding:4px 10px;font-size:12px;}
+.tabs{display:flex;gap:7px;margin-bottom:1rem;flex-wrap:wrap;}
+.tab{padding:5px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);font-size:12px;cursor:pointer;background:transparent;font-family:var(--font-sans);color:var(--color-text-secondary);}
+.tab.on{background:#BA7517;color:#FFF8F0;border-color:#854F0B;}
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:var(--border-radius-md);}
+.b-g{background:#EAF3DE;color:#3B6D11;}.b-a{background:#FAEEDA;color:#854F0B;}.b-b{background:#E6F1FB;color:#185FA5;}.b-gy{background:var(--color-background-secondary);color:var(--color-text-secondary);}
+.err{color:#A32D2D;font-size:13px;margin-top:6px;}
+.st{font-size:13px;font-weight:500;margin:0 0 0.6rem;}
+.chip{display:inline-block;background:var(--color-background-secondary);border-radius:20px;padding:2px 9px;font-size:12px;margin:2px;}
+input,select{height:36px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);font-size:13px;padding:0 10px;width:100%;}
+.back{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);font-size:13px;font-family:var(--font-sans);padding:0;margin-bottom:0.875rem;display:inline-block;}
+.row{display:flex;align-items:center;gap:8px;}
+.f1{flex:1;}
+.team-box{border-radius:var(--border-radius-md);padding:0.75rem;}
+.sc-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+/* Game area */
+.ga{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1.25rem;text-align:center;margin-bottom:1rem;}
+.big-num{font-size:56px;font-weight:500;line-height:1;}
+.timer-num{font-size:44px;font-weight:500;color:var(--color-text-primary);}
+.tap-btn{width:100%;padding:36px 0;font-size:22px;font-weight:500;border-radius:var(--border-radius-lg);border:2px solid #854F0B;background:#BA7517;color:#FFF8F0;cursor:pointer;user-select:none;-webkit-user-select:none;font-family:var(--font-sans);}
+.tap-btn:active{transform:scale(0.97);background:#854F0B;}
+.alt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0.75rem 0;}
+.alt-btn{height:90px;font-size:20px;font-weight:500;border-radius:var(--border-radius-lg);border:2px solid;cursor:pointer;user-select:none;-webkit-user-select:none;font-family:var(--font-sans);}
+.alt-btn:active{transform:scale(0.97);}
+.wgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0.5rem 0;}
+.wc{height:58px;border-radius:var(--border-radius-md);background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.wc.active{background:#FAEEDA;border-color:#EF9F27;}
+.wc.hit{background:#EAF3DE;border-color:#1D9E75;}
+.wc.miss{background:#FCEBEB;border-color:#E24B4A;}
+.aim-wrap{height:22px;background:var(--color-background-primary);border-radius:11px;overflow:hidden;position:relative;margin:1rem 0;border:0.5px solid var(--color-border-secondary);}
+.aim-zone{position:absolute;top:0;bottom:0;left:38%;width:24%;background:#EAF3DE;border-radius:0;}
+.aim-ind{position:absolute;top:0;bottom:0;width:8px;background:#D85A30;border-radius:4px;transition:none;}
+.fgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
+.fitem{height:48px;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);cursor:pointer;border:0.5px solid var(--color-border-tertiary);}
+.fitem:active{transform:scale(0.95);}
+.fitem.wrong{background:#FCEBEB;}
+.bottle-wrap{width:60px;height:180px;margin:0 auto;border:2px solid var(--color-border-secondary);border-radius:0 0 12px 12px;overflow:hidden;position:relative;background:var(--color-background-primary);}
+.bottle-fill{position:absolute;bottom:0;left:0;right:0;background:#378ADD;transition:height .08s;}
+</style>
+
+<div id="root"><p style="padding:2rem;text-align:center;color:var(--color-text-secondary);">Loading...</p></div>
+
+<script>
+const IG=[
+  {id:'kotta',name:'කොට්ට පොරය',en:'Pillow Fight',c:'#D85A30',l:'KP',m:'whack',dur:25,desc:'Pillows appear — tap them fast! Most hits wins.'},
+  {id:'kanaa',name:'කණා මුට්ටි',en:'Pot Breaking',c:'#7F77DD',l:'KM',m:'accuracy',desc:'Blindfolded! Tap where you think the hidden pot is.'},
+  {id:'gaslabu',name:'ඇට ගණන',en:'Seed Counting',c:'#639922',l:'GG',m:'count',desc:'Seeds flash briefly — count and guess correctly!'},
+  {id:'aliya',name:'අලියාට ඇස',en:'Elephant Eye',c:'#888780',l:'AE',m:'accuracy',desc:'Tap where the elephant\'s eye should go!'},
+  {id:'baniis',name:'බනිස් කෑම',en:'Bun Eating',c:'#BA7517',l:'BK',m:'tap',dur:20,desc:'Tap fast — eat the hanging bun! Most taps wins.'},
+  {id:'divima',name:'දිවීම',en:'Running Race',c:'#1D9E75',l:'DT',m:'alt',dur:15,desc:'Alternate L and R as fast as you can to run!'},
+];
+const TG=[
+  {id:'kamba',name:'කඹ ඇදීම',en:'Tug of War',c:'#D85A30',l:'KA',m:'tap',dur:20,desc:'Tap hard for your team! Higher team total wins.'},
+  {id:'wathura',name:'වතුර පිරවීම',en:'Water Filling',c:'#378ADD',l:'WP',m:'fill',desc:'Tap to fill the bottle to 100%! Score = your speed.'},
+  {id:'baadaka',name:'බාදා දිවීම',en:'Sack Race',c:'#7F77DD',l:'BD',m:'alt',dur:20,desc:'Alternate L/R to hop in the sack! Team total wins.'},
+  {id:'valalu',name:'වළලු දැමීම',en:'Ring Toss',c:'#1D9E75',l:'VD',m:'aim',desc:'Hit the green zone! 5 throws. Best accuracy wins.'},
+  {id:'hidden',name:'වස්තු සෙවීම',en:'Hidden Object',c:'#BA7517',l:'VS',m:'find',desc:'Find the unique item in the grid! Fastest wins.'},
+  {id:'gama',name:'ගම දිවීම',en:'Village Run',c:'#639922',l:'GD',m:'alt',dur:30,desc:'Long run — alternate L/R! Team total steps wins.'},
+];
+const ALL=[...IG,...TG];
+
+let S={screen:'login',user:null,lm:'guest',gi:'',sp:'',err:'',tab:'ind',game:null,scores:{},teams:{}};
+let GCB=null;
+
+async function load(){try{const r=await window.storage.get('pfund_g3');if(r&&r.value){const d=JSON.parse(r.value);S.scores=d.scores||{};S.teams=d.teams||{};}}catch(e){}}
+async function save(){try{await window.storage.set('pfund_g3',JSON.stringify({scores:S.scores,teams:S.teams}));}catch(e){}}
+
+const getG=id=>ALL.find(g=>g.id===id);
+const isT=id=>TG.some(g=>g.id===id);
+const gsc=id=>S.scores[id]||[];
+const msc=(id,n)=>gsc(id).find(s=>s.name===n);
+const ts=(id,t)=>gsc(id).filter(s=>s.team===t).reduce((a,b)=>a+b.score,0);
+const hadInd=n=>IG.some(g=>msc(g.id,n));
+const hadTeam=n=>TG.some(g=>msc(g.id,n));
+function myTeam(id,n){const t=S.teams[id];if(!t)return null;if((t.t1||[]).includes(n))return't1';if((t.t2||[]).includes(n))return't2';return null;}
+function allPlayers(){const s=new Set();Object.values(S.scores).forEach(a=>a.forEach(x=>s.add(x.name)));return s.size;}
+function lb(){const p={};ALL.forEach(g=>{const sc=gsc(g.id);if(!sc.length)return;if(isT(g.id)){const t1=ts(g.id,'t1'),t2=ts(g.id,'t2');const w=t1>=t2?'t1':'t2';sc.filter(s=>s.team===w).forEach(s=>{p[s.name]=(p[s.name]||0)+10;});}else{const top=[...sc].sort((a,b)=>b.score-a.score)[0];if(top)p[top.name]=(p[top.name]||0)+10;}});return Object.entries(p).sort((a,b)=>b[1]-a[1]);}
+
+function R(){document.getElementById('root').innerHTML=S.screen==='login'?rL():S.screen==='dash'?rD():S.screen==='detail'?rDt():S.screen==='result'?rRes():'';bind();}
+
+function rL(){return`<div style="max-width:340px;margin:2.5rem auto;">
+<div class="hdr" style="text-align:center;">
+  <p class="sub" style="margin:0 0 5px;font-size:11px;">&#127881; ශ්‍රී ලංකා අලුත් අවුරුදු 2025</p>
+  <h1 style="font-size:21px;">PFUND STAFF</h1>
+  <p style="font-size:13px;color:#FFF8F0;font-weight:500;margin:3px 0 0;">BAKMAHA ULELA</p>
+</div>
+<div class="card">
+  <div class="tabs"><button class="tab${S.lm==='guest'?' on':''}" data-a="tg">Participant</button><button class="tab${S.lm==='staff'?' on':''}" data-a="ts">Admin</button></div>
+  ${S.lm==='guest'?`<p class="st">ඔබේ නම / Your Name</p><input type="text" id="gn" value="${S.gi}" placeholder="Enter your name..." /><button class="btn btn-p btn-full" data-a="lg">Enter Games &#8594;</button>`
+  :`<div style="margin-bottom:8px;"><p class="st" style="margin-bottom:4px;">Username</p><input value="pfund" readonly /></div><p class="st" style="margin-bottom:4px;">Password</p><input type="password" id="sp" value="${S.sp}" placeholder="Password..." /><button class="btn btn-p btn-full" data-a="ls">Admin Login &#8594;</button>`}
+  ${S.err?`<p class="err">${S.err}</p>`:''}
+</div></div>`;}
+
+function rD(){const done=ALL.filter(g=>gsc(g.id).length>0).length;
+return`<div class="hdr"><div style="display:flex;justify-content:space-between;align-items:flex-start;">
+  <div><p class="sub" style="font-size:10px;margin:0 0 2px;">&#127881; PFUND STAFF BAKMAHA ULELA</p><h1>Games</h1></div>
+  <div style="text-align:right;"><span class="badge ${S.user.isStaff?'b-a':'b-g'}" style="display:block;margin-bottom:5px;">${S.user.isStaff?'&#128081; Admin':S.user.name}</span><button class="btn btn-sm" data-a="out">Logout</button></div>
+</div></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;">
+  ${[['Games','',ALL.length],['Active','#BA7517',done],['Players','#1D9E75',allPlayers()]].map(([l,c,v])=>`<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:0.6rem;text-align:center;"><p style="font-size:11px;color:var(--color-text-secondary);margin:0 0 2px;">${l}</p><p style="font-size:20px;font-weight:500;margin:0;${c?'color:'+c:''}">${v}</p></div>`).join('')}
+</div>
+<div class="tabs"><button class="tab${S.tab==='ind'?' on':''}" data-a="ti">Individual</button><button class="tab${S.tab==='team'?' on':''}" data-a="tt">Team</button><button class="tab${S.tab==='lb'?' on':''}" data-a="tlb">Leaderboard</button></div>
+${S.tab==='ind'?rGG(IG):S.tab==='team'?rGG(TG):rLB()}`;}
+
+function rGG(games){const n=S.user.name;return`<div class="ggrid">${games.map(g=>{const sc=msc(g.id,n),cnt=gsc(g.id).length;
+return`<div class="gc${sc?' played':''}" data-a="og" data-id="${g.id}">
+  <div style="width:30px;height:30px;border-radius:var(--border-radius-md);background:${g.c}20;color:${g.c};font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;margin-bottom:7px;">${g.l}</div>
+  <div style="font-size:13px;font-weight:500;margin-bottom:2px;line-height:1.3;">${g.name}</div>
+  <div style="font-size:11px;color:var(--color-text-secondary);">${g.en}</div>
+  <div style="margin-top:7px;">${sc?`<span class="badge b-g">Score: ${sc.score}</span>`:cnt?`<span class="badge b-gy">${cnt} played</span>`:`<span class="badge b-gy">Not started</span>`}</div>
+</div>`}).join('')}</div>`;}
+
+function rLB(){const data=lb();if(!data.length)return`<div class="card" style="text-align:center;padding:2rem;"><p style="color:var(--color-text-secondary);font-size:13px;">Play games to see rankings!</p></div>`;
+const m=['&#129351;','&#129352;','&#129353;'];
+return`<div class="card">${data.map(([name,pts],i)=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);"><div style="font-size:16px;width:28px;text-align:center;">${m[i]||i+1}</div><div style="flex:1;font-size:13px;">${name}</div><div style="font-size:13px;font-weight:500;color:#BA7517;">${pts} pts</div></div>`).join('')}</div>`;}
+
+function rDt(){const g=getG(S.game);const n=S.user.name;const team=isT(S.game);const sc=msc(S.game,n);const scores=gsc(S.game);const td=S.teams[S.game]||{size:0,t1:[],t2:[]};const mt=myTeam(S.game,n);
+let play='';
+if(!team){
+  play=sc?`<div style="text-align:center;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem;margin-bottom:10px;"><p style="font-size:12px;color:var(--color-text-secondary);margin:0 0 3px;">Your Score</p><p style="font-size:40px;font-weight:500;color:#BA7517;margin:0;">${sc.score}</p></div><button class="btn btn-g btn-full" data-a="play">Play Again</button>`:
+  `<button class="btn btn-p btn-full" style="padding:14px;font-size:15px;" data-a="play">&#9654; Play Now</button>`;
+}else{
+  if(!td.size&&!S.user.isStaff){play=`<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:0.875rem;text-align:center;font-size:13px;color:var(--color-text-secondary);">Waiting for admin to set team size...</div>`;}
+  if(!td.size&&S.user.isStaff){play=`<p class="st">Set Team Size</p><div class="row"><input type="number" id="tsz" min="2" max="20" placeholder="Players per team..." style="width:140px;" /><button class="btn btn-p" data-a="stsz">Set</button></div>`;}
+  if(td.size>0){
+    const t1f=(td.t1||[]).length>=td.size,t2f=(td.t2||[]).length>=td.size;
+    play=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div class="team-box" style="background:#EAF3DE;">
+        <p style="font-size:11px;font-weight:500;color:#3B6D11;margin:0 0 5px;">Team 1 (${(td.t1||[]).length}/${td.size})</p>
+        ${(td.t1||[]).map(p=>`<span class="chip">${p}</span>`).join('')}
+        ${!t1f&&!mt&&!sc&&!hadTeam(n)?`<div style="margin-top:6px;"><button class="btn btn-g btn-sm" data-a="jt1">+ Join</button></div>`:''}
+      </div>
+      <div class="team-box" style="background:#E6F1FB;">
+        <p style="font-size:11px;font-weight:500;color:#185FA5;margin:0 0 5px;">Team 2 (${(td.t2||[]).length}/${td.size})</p>
+        ${(td.t2||[]).map(p=>`<span class="chip">${p}</span>`).join('')}
+        ${!t2f&&!mt&&!sc&&!hadTeam(n)?`<div style="margin-top:6px;"><button class="btn btn-b btn-sm" data-a="jt2">+ Join</button></div>`:''}
+      </div>
+    </div>`;
+    if(mt){play+=sc?`<div style="text-align:center;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem;margin-bottom:10px;"><p style="font-size:12px;color:var(--color-text-secondary);margin:0 0 3px;">Your Score</p><p style="font-size:40px;font-weight:500;color:#BA7517;margin:0;">${sc.score}</p><p style="font-size:12px;color:var(--color-text-secondary);margin:3px 0 0;">Team ${mt==='t1'?1:2} Total: ${ts(S.game,mt)}</p></div>`:`<button class="btn btn-p btn-full" style="padding:14px;font-size:15px;" data-a="play">&#9654; Play for Team ${mt==='t1'?1:2}</button>`;}
+    if(!mt&&!sc){play+=`<p style="font-size:12px;color:var(--color-text-secondary);text-align:center;">Join a team above to play.</p>`;}
+  }
+}
+let scHtml='';
+if(team&&(scores.length>0||(td.size>0))){const t1s=scores.filter(s=>s.team==='t1'),t2s=scores.filter(s=>s.team==='t2'),t1t=ts(S.game,'t1'),t2t=ts(S.game,'t2');
+scHtml=`<div class="card"><p class="st">Team Scores ${t1t>t2t?'&#127942; Team 1 leads':t2t>t1t?'&#127942; Team 2 leads':'Tied'}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><p style="font-size:11px;font-weight:500;color:#3B6D11;margin:0 0 5px;">Team 1 — ${t1t}</p>${t1s.map(s=>`<div class="sc-row"><span style="flex:1;font-size:12px;">${s.name}</span><span style="font-size:12px;color:#BA7517;">${s.score}</span></div>`).join('')||'<span style="font-size:11px;color:var(--color-text-tertiary);">None yet</span>'}</div><div><p style="font-size:11px;font-weight:500;color:#185FA5;margin:0 0 5px;">Team 2 — ${t2t}</p>${t2s.map(s=>`<div class="sc-row"><span style="flex:1;font-size:12px;">${s.name}</span><span style="font-size:12px;color:#BA7517;">${s.score}</span></div>`).join('')||'<span style="font-size:11px;color:var(--color-text-tertiary);">None yet</span>'}</div></div></div>`;}
+else if(!team&&scores.length){const sorted=[...scores].sort((a,b)=>b.score-a.score);scHtml=`<div class="card"><p class="st">Scores (${scores.length})</p>${sorted.map((s,i)=>`<div class="sc-row"><span style="font-size:13px;width:22px;">${i===0?'&#127942;':i+1}</span><span style="flex:1;font-size:12px;">${s.name}</span><span style="font-size:12px;font-weight:500;color:#BA7517;">${s.score}</span></div>`).join('')}</div>`;}
+return`<button class="back" data-a="back">&#8592; Back</button>
+<div class="hdr" style="margin-bottom:1rem;"><p class="sub" style="font-size:10px;margin:0 0 3px;">${team?'Team Game':'Individual Game'}</p><h1>${g.name}</h1><p class="sub">${g.en}</p></div>
+<div class="card"><p style="font-size:13px;color:var(--color-text-secondary);margin:0 0 12px;">${g.desc}</p>${play}</div>${scHtml}`;}
+
+function rRes(){const g=getG(S.game);const n=S.user.name;const team=isT(S.game);const sc=msc(S.game,n);const scores=gsc(S.game);
+let body='';
+if(team){const mt=myTeam(S.game,n);const mts=ts(S.game,mt),ots=ts(S.game,mt==='t1'?'t2':'t1');body=`<div style="text-align:center;"><p style="font-size:12px;color:var(--color-text-secondary);">Your score</p><div class="big-num" style="color:#BA7517;">${sc?.score||0}</div><p style="font-size:13px;color:var(--color-text-secondary);margin:6px 0;">Team ${mt==='t1'?1:2}: <strong>${mts}</strong> &bull; Opponent: ${ots}</p>${mts>ots?'<p style="color:#1D9E75;font-weight:500;">&#127942; Your team leads!</p>':mts<ots?'<p style="color:#A32D2D;font-size:13px;">Keep tapping — your team needs more!</p>':'<p style="color:#BA7517;font-size:13px;">Tied so far!</p>'}</div>`;}
+else{const sorted=[...scores].sort((a,b)=>b.score-a.score);const rank=sorted.findIndex(s=>s.name===n)+1;body=`<div style="text-align:center;"><p style="font-size:12px;color:var(--color-text-secondary);">Your score</p><div class="big-num" style="color:#BA7517;">${sc?.score||0}</div><p style="font-size:13px;color:var(--color-text-secondary);margin:6px 0;">Rank #${rank} of ${scores.length}</p>${rank===1?'<p style="color:#1D9E75;font-weight:500;font-size:15px;">&#127942; You are #1!</p>':rank<=3?'<p style="color:#BA7517;font-size:13px;">Top 3 &#128293;</p>':'<p style="color:var(--color-text-secondary);font-size:12px;">Play again to improve!</p>'}</div>`;}
+return`<div class="hdr" style="text-align:center;margin-bottom:1rem;"><p class="sub" style="font-size:10px;margin:0 0 3px;">Result</p><h1>${g.name}</h1></div><div class="card">${body}</div><div class="row"><button class="btn f1" data-a="detail">View All Scores</button><button class="btn btn-p f1" data-a="back">&#8592; Games</button></div>`;}
+
+function bind(){
+  document.querySelectorAll('[data-a]').forEach(el=>{el.onclick=function(){
+    const a=this.dataset.a,id=this.dataset.id;
+    if(a==='tg'){S.lm='guest';S.err='';R();}
+    else if(a==='ts'){S.lm='staff';S.err='';R();}
+    else if(a==='lg'){const v=document.getElementById('gn')?.value?.trim();if(!v){S.err='Please enter your name.';R();return;}S.user={name:v,isStaff:false};S.screen='dash';S.err='';R();}
+    else if(a==='ls'){const p=document.getElementById('sp')?.value;if(p!=='avurudu'){S.err='Incorrect password.';R();return;}S.user={name:'Admin',isStaff:true};S.screen='dash';S.err='';R();}
+    else if(a==='out'){S.user=null;S.screen='login';S.gi='';S.sp='';R();}
+    else if(a==='ti'){S.tab='ind';R();}else if(a==='tt'){S.tab='team';R();}else if(a==='tlb'){S.tab='lb';R();}
+    else if(a==='og'){S.game=id;S.screen='detail';R();}
+    else if(a==='back'){S.screen='dash';R();}
+    else if(a==='detail'){S.screen='detail';R();}
+    else if(a==='jt1'||a==='jt2'){const tm=a==='jt1'?'t1':'t2';if(!S.teams[S.game])S.teams[S.game]={size:0,t1:[],t2:[]};const t=S.teams[S.game];if(!(t[tm]||[]).includes(S.user.name))t[tm].push(S.user.name);save();R();}
+    else if(a==='stsz'){const v=parseInt(document.getElementById('tsz')?.value);if(!v||v<2){alert('Min 2 players');return;}if(!S.teams[S.game])S.teams[S.game]={t1:[],t2:[]};S.teams[S.game].size=v;save();R();}
+    else if(a==='play'){
+      const g=getG(S.game);const n=S.user.name;
+      startGame(g,n,score=>{
+        if(!S.scores[S.game])S.scores[S.game]=[];
+        const ei=S.scores[S.game].findIndex(s=>s.name===n);
+        const entry={name:n,score,at:new Date().toLocaleTimeString(),team:myTeam(S.game,n)};
+        if(ei>=0)S.scores[S.game][ei]=entry;else S.scores[S.game].push(entry);
+        save();S.screen='result';R();
+      });
+    }
+  };});
+  const gn=document.getElementById('gn');if(gn)gn.oninput=e=>S.gi=e.target.value;
+  const sp=document.getElementById('sp');if(sp)sp.oninput=e=>S.sp=e.target.value;
+}
+
+function startGame(g,player,onDone){
+  document.getElementById('root').innerHTML=`<button class="back" id="gquit">&#8592; Quit</button><div class="hdr" style="margin-bottom:1rem;text-align:center;"><h1 style="font-size:16px;">${g.name} — ${player}</h1></div><div id="gc"></div>`;
+  document.getElementById('gquit').onclick=()=>{S.screen='detail';R();};
+  const el=document.getElementById('gc');
+  GCB=onDone;
+  window._gdone=onDone;
+  if(g.m==='tap')pTap(el,g,onDone);
+  else if(g.m==='alt')pAlt(el,g,onDone);
+  else if(g.m==='whack')pWhack(el,g,onDone);
+  else if(g.m==='accuracy')pAccuracy(el,g,onDone);
+  else if(g.m==='count')pCount(el,g,onDone);
+  else if(g.m==='fill')pFill(el,g,onDone);
+  else if(g.m==='aim')pAim(el,g,onDone);
+  else if(g.m==='find')pFind(el,g,onDone);
+}
+
+function pTap(el,g,done){
+  let taps=0,timer=g.dur,iv,started=false;
+  el.innerHTML=`<div class="ga"><p style="font-size:12px;color:var(--color-text-secondary);margin:0 0 2px;">Time Left</p><div class="timer-num" id="gt">${timer}</div><div class="big-num" style="color:#BA7517;" id="gc">0</div><p style="font-size:12px;color:var(--color-text-secondary);">taps</p></div><button class="tap-btn" id="tb">${started?'TAP!':'TAP to Start'}</button>`;
+  const btn=document.getElementById('tb');
+  function tap(e){e.preventDefault();if(!started){started=true;btn.textContent='TAP!';iv=setInterval(()=>{timer--;const gt=document.getElementById('gt');if(gt)gt.textContent=timer;if(timer<=0){clearInterval(iv);done(taps);}},1000);}taps++;const gc=document.getElementById('gc');if(gc)gc.textContent=taps;}
+  btn.addEventListener('touchstart',tap,{passive:false});btn.addEventListener('click',tap);
+}
+
+function pAlt(el,g,done){
+  let steps=0,timer=g.dur,iv,last='',started=false;
+  el.innerHTML=`<div class="ga"><p style="font-size:12px;color:var(--color-text-secondary);margin:0 0 2px;">Time Left</p><div class="timer-num" id="gt">${timer}</div><div class="big-num" style="color:#1D9E75;" id="gc">0</div><p style="font-size:12px;color:var(--color-text-secondary);">steps</p></div><div class="alt-grid"><button class="alt-btn" id="bl" style="background:#EAF3DE;border-color:#1D9E75;color:#3B6D11;">L</button><button class="alt-btn" id="br" style="background:#E6F1FB;border-color:#185FA5;color:#185FA5;">R</button></div><p style="text-align:center;font-size:12px;color:var(--color-text-secondary);">Alternate L and R!</p>`;
+  function tap(side,e){e.preventDefault();if(!started){started=true;iv=setInterval(()=>{timer--;const gt=document.getElementById('gt');if(gt)gt.textContent=timer;if(timer<=0){clearInterval(iv);done(steps);}},1000);}if(side!==last){steps++;last=side;const gc=document.getElementById('gc');if(gc)gc.textContent=steps;}}
+  const bl=document.getElementById('bl'),br=document.getElementById('br');
+  bl.addEventListener('touchstart',e=>tap('L',e),{passive:false});bl.addEventListener('click',e=>tap('L',e));
+  br.addEventListener('touchstart',e=>tap('R',e),{passive:false});br.addEventListener('click',e=>tap('R',e));
+}
+
+function pWhack(el,g,done){
+  let hits=0,timer=g.dur,iv,wiv,active=-1;
+  el.innerHTML=`<div class="ga" style="padding:0.875rem;"><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--color-text-secondary);">Time: <b id="gt">${timer}</b>s</span><span style="font-size:12px;color:#1D9E75;">Hits: <b id="gc">0</b></span></div><div class="wgrid" id="wg">${Array(12).fill(0).map((_,i)=>`<div class="wc" data-i="${i}"></div>`).join('')}</div></div>`;
+  iv=setInterval(()=>{timer--;const gt=document.getElementById('gt');if(gt)gt.textContent=timer;if(timer<=0){clearInterval(iv);clearInterval(wiv);done(hits);}},1000);
+  function nxt(){if(active>=0){const c=document.getElementById('wc'+active);if(c&&c.dataset.i==active){c.className='wc';c.innerHTML='';}}active=Math.floor(Math.random()*12);const c=document.getElementById('wc'+active);if(c){c.className='wc active';c.innerHTML='&#x1F4A5;';}}
+  wiv=setInterval(nxt,750);nxt();
+  document.getElementById('wg').addEventListener('touchstart',e=>{e.preventDefault();const cell=e.target.closest('[data-i]');if(!cell)return;const i=parseInt(cell.dataset.i);if(i===active){hits++;cell.className='wc hit';cell.innerHTML='&#10003;';active=-1;clearInterval(wiv);wiv=setInterval(nxt,750);nxt();const gc=document.getElementById('gc');if(gc)gc.textContent=hits;}else{cell.className='wc miss';setTimeout(()=>{if(cell)cell.className='wc';},250);}},{passive:false});
+  document.getElementById('wg').addEventListener('click',e=>{const cell=e.target.closest('[data-i]');if(!cell)return;const i=parseInt(cell.dataset.i);if(i===active){hits++;cell.className='wc hit';cell.innerHTML='&#10003;';active=-1;clearInterval(wiv);wiv=setInterval(nxt,750);nxt();const gc=document.getElementById('gc');if(gc)gc.textContent=hits;}else{cell.className='wc miss';setTimeout(()=>{if(cell)cell.className='wc';},250);}});
+}
+
+function pAccuracy(el,g,done){
+  const tx=15+Math.random()*70,ty=15+Math.random()*70;let clicked=false;
+  el.innerHTML=`<div class="card"><p style="font-size:13px;color:var(--color-text-secondary);text-align:center;">${g.id==='aliya'?'Tap where the elephant\'s eye belongs!':'Blindfolded! Tap where the hidden pot is!'}</p></div><div id="aa" style="height:260px;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);overflow:hidden;cursor:crosshair;display:flex;align-items:center;justify-content:center;"><p style="font-size:14px;color:var(--color-text-secondary);text-align:center;padding:1rem;">Tap anywhere on<br>this area!</p></div>`;
+  const aa=document.getElementById('aa');
+  function tap(cx,cy,rect){
+    if(clicked)return;clicked=true;
+    const px=((cx-rect.left)/rect.width)*100,py=((cy-rect.top)/rect.height)*100;
+    const dist=Math.sqrt(Math.pow(px-tx,2)+Math.pow(py-ty,2));
+    const score=Math.max(0,Math.round(100-dist*1.5));
+    aa.innerHTML=`<div style="position:relative;width:100%;height:100%;">
+      <div style="position:absolute;left:${tx}%;top:${ty}%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#1D9E75;border:2px solid white;z-index:2;"></div>
+      <div style="position:absolute;left:${px}%;top:${py}%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#D85A30;border:2px solid white;z-index:2;"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
+        <div style="background:var(--color-background-primary);border-radius:var(--border-radius-lg);padding:1.25rem;text-align:center;">
+          <p style="font-size:12px;color:var(--color-text-secondary);margin:0 0 4px;">Accuracy</p>
+          <p style="font-size:40px;font-weight:500;color:#BA7517;margin:0;">${score}</p>
+          <button class="btn btn-p" id="abtn" style="margin-top:8px;">Continue</button>
+        </div>
+      </div>
+    </div>`;
+    document.getElementById('abtn').onclick=()=>done(score);
+  }
+  aa.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];tap(t.clientX,t.clientY,aa.getBoundingClientRect());},{passive:false});
+  aa.addEventListener('click',e=>{tap(e.clientX,e.clientY,aa.getBoundingClientRect());});
+}
+
+function pCount(el,g,done){
+  let round=0,total=0;
+  function next(){
+    if(round>=3){done(total);return;}round++;
+    const count=4+Math.floor(Math.random()*16);
+    el.innerHTML=`<div class="ga" style="text-align:center;"><p style="font-size:12px;color:var(--color-text-secondary);">Round ${round}/3 — Count the seeds!</p><div id="cdots" style="display:flex;flex-wrap:wrap;justify-content:center;gap:5px;padding:0.75rem;min-height:70px;"></div><p style="font-size:13px;color:#BA7517;margin:0;" id="cst">Watch carefully...</p></div>`;
+    const dd=document.getElementById('cdots');
+    for(let i=0;i<count;i++){const d=document.createElement('div');d.style.cssText='width:14px;height:14px;border-radius:50%;background:#639922;';dd.appendChild(d);}
+    setTimeout(()=>{dd.innerHTML='';document.getElementById('cst').textContent='How many seeds did you see?';const inp=document.createElement('input');inp.type='number';inp.placeholder='Enter count...';inp.style.cssText='margin:8px 0;';const btn=document.createElement('button');btn.className='btn btn-p btn-full';btn.textContent='Submit';dd.after(inp);inp.after(btn);btn.onclick=()=>{const v=parseInt(inp.value);if(!v)return;const diff=Math.abs(v-count);const pts=Math.max(0,10-diff*2);total+=pts;el.innerHTML=`<div class="ga" style="text-align:center;"><p style="font-size:13px;color:var(--color-text-secondary);">Correct: <strong>${count}</strong></p><p style="font-size:13px;">Your guess: ${v}</p><p style="font-size:26px;font-weight:500;color:#1D9E75;">+${pts} pts</p><p style="font-size:13px;color:var(--color-text-secondary);">Total so far: ${total}</p><button class="btn btn-p" id="cnx" style="margin-top:8px;">${round<3?'Next Round':'See Result'}</button></div>`;document.getElementById('cnx').onclick=next;};},2200);
+  }next();
+}
+
+function pFill(el,g,done){
+  let pct=0,taps=0;
+  el.innerHTML=`<div class="ga" style="text-align:center;"><p style="font-size:12px;color:var(--color-text-secondary);margin:0 0 10px;">Tap to fill the bottle!</p><div class="bottle-wrap"><div class="bottle-fill" id="bfill" style="height:0%;"></div><div id="bpct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;">0%</div></div></div><button class="tap-btn" id="ftb" style="background:#378ADD;border-color:#185FA5;margin-top:10px;">TAP to Fill!</button>`;
+  const btn=document.getElementById('ftb');
+  function tap(e){e.preventDefault();pct=Math.min(100,pct+2.5);taps++;document.getElementById('bfill').style.height=pct+'%';document.getElementById('bpct').textContent=Math.round(pct)+'%';if(pct>=100){btn.disabled=true;setTimeout(()=>done(taps),300);}}
+  btn.addEventListener('touchstart',tap,{passive:false});btn.addEventListener('click',tap);
+}
+
+function pAim(el,g,done){
+  let throws=0,score=0,pos=50,dir=1,aiv;
+  function render(){
+    el.innerHTML=`<div class="ga" style="text-align:center;"><p style="font-size:12px;color:var(--color-text-secondary);">Throw ${throws+1}/5 — Hit the green zone!</p><div class="aim-wrap"><div class="aim-zone"></div><div class="aim-ind" id="ai" style="left:50%;"></div></div><p style="font-size:26px;font-weight:500;color:#BA7517;">${score} pts</p></div><button class="tap-btn" id="at">THROW!</button>`;
+    let p=50,d=1;
+    aiv=setInterval(()=>{p+=d*2.5;if(p>=100||p<=0)d*=-1;const ai=document.getElementById('ai');if(ai)ai.style.left=p+'%';pos=p;},35);
+    const at=document.getElementById('at');
+    function thr(e){e.preventDefault();clearInterval(aiv);throws++;const inZ=pos>=38&&pos<=62,near=pos>=25&&pos<=75;const pts=inZ?10:near?5:0;score+=pts;el.innerHTML=`<div class="ga" style="text-align:center;"><p style="font-size:16px;font-weight:500;color:${inZ?'#1D9E75':near?'#BA7517':'#A32D2D'};">${inZ?'Perfect! +10':near?'Close! +5':'Miss! +0'}</p><p style="font-size:26px;font-weight:500;color:#BA7517;">Total: ${score}</p><button class="btn btn-p" id="an" style="margin-top:10px;">${throws<5?'Next Throw':'Finish'}</button></div>`;document.getElementById('an').onclick=()=>{if(throws<5)render();else done(score);};}
+    at.addEventListener('touchstart',thr,{passive:false});at.addEventListener('click',thr);
+  }render();
+}
+
+function pFind(el,g,done){
+  const N=25;const tgt=Math.floor(Math.random()*N);const st=Date.now();
+  const icons=['&#x1F3BA;','&#x1F3B8;','&#x1F941;','&#x1F38A;','&#x2B50;','&#x1F525;'];
+  const h=icons[Math.floor(Math.random()*icons.length)];
+  const d=icons.filter(i=>i!==h)[Math.floor(Math.random()*(icons.length-1))];
+  el.innerHTML=`<div class="card" style="text-align:center;"><p style="font-size:13px;color:var(--color-text-secondary);">Find <span style="font-size:22px;">${h}</span> — it appears only once!</p></div><div class="fgrid" id="fg">${Array(N).fill(0).map((_,i)=>`<div class="fitem" data-fi="${i}">${i===tgt?h:d}</div>`).join('')}</div>`;
+  const fg=document.getElementById('fg');
+  function tap(i,cell){if(parseInt(i)===tgt){const ms=Date.now()-st;const score=Math.max(10,Math.round(100-ms/100));done(score);}else{cell.classList.add('wrong');setTimeout(()=>cell.classList.remove('wrong'),300);}}
+  fg.addEventListener('touchstart',e=>{e.preventDefault();const c=e.target.closest('[data-fi]');if(c)tap(c.dataset.fi,c);},{passive:false});
+  fg.addEventListener('click',e=>{const c=e.target.closest('[data-fi]');if(c)tap(c.dataset.fi,c);});
+}
+
+load().then(R);
+</script>
