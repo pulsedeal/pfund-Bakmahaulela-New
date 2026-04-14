@@ -2,174 +2,730 @@
 <html lang="si">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PFUND LISSA GAHA GAME</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PFUND ONLINE BAKMAHA ULELA 🎊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <style>
-body { font-family: sans-serif; background:#140810; color:white; text-align:center; }
-button { padding:10px; margin:5px; width:100%; }
-.opt { background:#222; border:1px solid #555; }
-.opt.ok { background:green; }
-.opt.no { background:red; }
-canvas { background:#1a0d12; margin:10px auto; display:block; }
+:root {
+  --cr:#8D153A; --crd:#6B0F2B; --gold:#FFD700; --grn:#00A550; --org:#FF7F00;
+  --bg:#140810; --bg2:#220f18; --bg3:#2e1420; --bg4:#3a1828;
+  --txt:#fff0dc; --txt2:#c8889a; --brd:#4a2030;
+  --ok:#0d3a1e; --okb:#1a7a40; --okt:#80ffb0;
+  --ng:#3a0d0d; --ngb:#7a1a1a; --ngt:#ffaaaa;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans Sinhala',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;}
+#app{max-width:520px;margin:0 auto;}
+.screen{display:none;}.screen.on{display:block;}
+.stripe{height:5px;background:repeating-linear-gradient(90deg,
+  var(--cr) 0%,var(--cr) 20%,var(--gold) 20%,var(--gold) 40%,
+  var(--grn) 40%,var(--grn) 60%,var(--org) 60%,var(--org) 80%,
+  var(--cr) 80%,var(--cr) 100%);}
+.hdr{background:linear-gradient(135deg,var(--crd) 0%,var(--cr) 45%,#b01845 100%);
+  padding:14px 16px;text-align:center;border-bottom:3px solid var(--gold);}
+.hdr h1{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:1px;}
+.hdr sub{color:var(--txt2);font-size:12px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:11px 20px;border:none;border-radius:10px;cursor:pointer;
+  font-size:14px;font-weight:600;font-family:'Noto Sans Sinhala',sans-serif;transition:all .18s;}
+.b-red{background:linear-gradient(135deg,var(--cr),var(--crd));color:#fff;border:1px solid rgba(255,215,0,.25);}
+.b-red:active{transform:scale(.97);}
+.b-gold{background:linear-gradient(135deg,#FFD700,#e6c000);color:var(--crd);font-weight:700;}
+.b-gold:active{transform:scale(.97);}
+.b-ghost{background:transparent;color:var(--txt2);border:1px solid var(--brd);font-size:13px;}
+.inp{width:100%;padding:12px 15px;border:2px solid var(--brd);border-radius:10px;
+  font-size:15px;background:var(--bg2);color:var(--txt);font-family:'Noto Sans Sinhala',sans-serif;}
+.inp:focus{outline:none;border-color:var(--gold);}
+.opt{display:block;width:100%;text-align:left;padding:10px 13px;margin:5px 0;
+  border:2px solid var(--brd);border-radius:9px;cursor:pointer;font-size:13px;
+  background:var(--bg2);color:var(--txt);font-family:'Noto Sans Sinhala',sans-serif;
+  transition:all .14s;line-height:1.4;}
+.opt:hover:not(:disabled){border-color:var(--gold);background:var(--bg3);}
+.opt.ok{background:var(--ok)!important;border-color:var(--okb)!important;color:var(--okt)!important;}
+.opt.no{background:var(--ng)!important;border-color:var(--ngb)!important;color:var(--ngt)!important;}
+.pbar-wrap{height:5px;background:var(--bg4);border-radius:3px;margin-bottom:12px;}
+.pbar{height:100%;background:linear-gradient(90deg,var(--cr),var(--gold));border-radius:3px;transition:width .4s;}
+.lbt{width:100%;border-collapse:collapse;font-size:13px;}
+.lbt thead th{background:var(--cr);color:var(--gold);padding:10px 8px;text-align:left;}
+.lbt td{padding:9px 8px;border-bottom:1px solid var(--brd);}
+.lbt tr:nth-child(1) td{background:rgba(255,215,0,.07);}
+.lbt tr:nth-child(2) td{background:rgba(192,192,192,.05);}
+.lbt tr:nth-child(3) td{background:rgba(205,127,50,.05);}
+.bscore{font-family:'Bebas Neue',sans-serif;font-size:80px;color:var(--gold);line-height:1;}
+.err-box{display:none;color:#ff8080;font-size:12px;margin:6px 0;padding:7px 12px;
+  background:rgba(100,0,0,.4);border:1px solid var(--ngb);border-radius:7px;}
+/* Game layout */
+.g-layout{display:flex;align-items:flex-start;}
+.g-pole-col{flex-shrink:0;width:76px;background:var(--bg2);border-right:1px solid var(--brd);display:flex;flex-direction:column;}
+.pole-score-label{text-align:center;padding:5px 2px 3px;font-size:9px;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;}
+.pole-score-val{text-align:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);padding-bottom:5px;border-bottom:1px solid var(--brd);}
+.g-q-col{flex:1;padding:13px;min-height:320px;}
+.admt{width:100%;border-collapse:collapse;font-size:13px;}
+.admt th{background:var(--cr);color:var(--gold);padding:9px 8px;text-align:left;}
+.admt td{padding:9px 8px;border-bottom:1px solid var(--brd);}
+canvas{display:block;}
 </style>
 </head>
-
 <body>
+<div id="app">
 
-<h2>🎊 ලිස්සන ගහ Game</h2>
-
-<div id="start">
-<input id="name" placeholder="ඔබේ නම"><br><br>
-<button onclick="startGame()">Start</button>
+<!-- WELCOME -->
+<div id="sc-w" class="screen on">
+  <div class="stripe"></div>
+  <div class="hdr"><h1>🎊 PFUND ONLINE BAKMAHA ULELA 🎊</h1><sub>ලිස්සන ගහ ක්‍රීඩාව 🌸 2025</sub></div>
+  <div style="padding:14px;text-align:center">
+    <canvas id="cv-w" width="280" height="370" style="margin:0 auto 12px"></canvas>
+    <div style="max-width:300px;margin:0 auto">
+      <input id="inp-n" class="inp" type="text" placeholder="ඔබේ නම ලියන්න..." maxlength="25"/>
+      <div id="n-err" class="err-box">⚠ කරුණාකර නම ඇතුළු කරන්න!</div>
+      <button class="btn b-gold" onclick="startGame()" style="width:100%;margin-top:10px">🎮 ආරම්භ කරන්න</button>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
+        <button class="btn b-ghost" onclick="goTo('lb')">🏆 Leaderboard</button>
+        <button class="btn b-ghost" onclick="goTo('adm')">⚙ Admin</button>
+      </div>
+      <p id="w-mode" style="text-align:center;font-size:10px;color:var(--brd);margin-top:10px"></p>
+    </div>
+  </div>
 </div>
 
-<div id="game" style="display:none;">
-<p id="q"></p>
-<p id="score"></p>
-<canvas id="cv" width="80" height="300"></canvas>
-<div id="opts"></div>
-<button onclick="nextQ()" id="next" style="display:none;">Next</button>
+<!-- GAME -->
+<div id="sc-g" class="screen">
+  <div class="stripe"></div>
+  <div class="hdr"><h1>🎊 PFUND ONLINE BAKMAHA ULELA 🎊</h1><sub id="g-sub">ප්‍රශ්නය 1 / 10</sub></div>
+  <div class="g-layout">
+    <div class="g-pole-col">
+      <div class="pole-score-label">ලකුණු</div>
+      <div class="pole-score-val" id="pole-score">0/10</div>
+      <canvas id="cv-g" width="76" height="340"></canvas>
+    </div>
+    <div class="g-q-col">
+      <div class="pbar-wrap"><div id="pbar" class="pbar"></div></div>
+      <p id="q-txt" style="font-size:13px;font-weight:600;margin-bottom:10px;line-height:1.55"></p>
+      <div id="q-opts"></div>
+      <button id="btn-nxt" onclick="nextQ()" class="btn b-red" style="display:none;margin-top:10px;width:100%">ඊළඟ ප්‍රශ්නය →</button>
+    </div>
+  </div>
 </div>
 
-<div id="end" style="display:none;">
-<h2 id="final"></h2>
-<button onclick="location.reload()">Restart</button>
+<!-- RESULT -->
+<div id="sc-r" class="screen">
+  <div class="stripe"></div>
+  <div class="hdr"><h1>🎊 PFUND ONLINE BAKMAHA ULELA 🎊</h1><sub>ක්‍රීඩාව අවසන්!</sub></div>
+  <div style="padding:16px;text-align:center">
+    <canvas id="cv-r" width="220" height="340" style="margin:0 auto 10px"></canvas>
+    <p id="r-nm" style="font-size:20px;font-weight:700"></p>
+    <div id="r-sc" class="bscore"></div>
+    <p id="r-msg" style="color:var(--txt2);font-size:13px;margin:8px 0 16px"></p>
+    <button class="btn b-gold" onclick="goTo('lb')" style="margin-right:8px">🏆 Leaderboard</button>
+    <button class="btn b-ghost" onclick="goTo('w')">← නැවත</button>
+  </div>
 </div>
 
+<!-- LEADERBOARD -->
+<div id="sc-lb" class="screen">
+  <div class="stripe"></div>
+  <div class="hdr"><h1>🎊 PFUND ONLINE BAKMAHA ULELA 🎊</h1><sub>🏆 ශ්‍රේණිගත කිරීම</sub></div>
+  <div style="padding:14px">
+    <div id="lb-wrap"></div>
+    <button class="btn b-ghost" onclick="goTo('w')" style="margin-top:12px">← ආපසු</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="sc-adm" class="screen">
+  <div class="stripe"></div>
+  <div class="hdr"><h1>⚙ Admin Dashboard</h1></div>
+  <div id="adm-lgn" style="padding:24px;max-width:280px;margin:0 auto">
+    <input id="adm-u" class="inp" placeholder="Username" style="margin-bottom:8px"/>
+    <input id="adm-p" class="inp" type="password" placeholder="Password"/>
+    <button class="btn b-red" onclick="doLogin()" style="width:100%;margin-top:10px">Login</button>
+    <button class="btn b-ghost" onclick="goTo('w')" style="width:100%;margin-top:5px">← ආපසු</button>
+  </div>
+  <div id="adm-dsh" style="display:none;padding:14px">
+    <table class="admt">
+      <thead><tr><th>නම</th><th>ලකුණු</th><th>දිනය</th></tr></thead>
+      <tbody id="adm-tb"></tbody>
+    </table>
+    <button class="btn b-ghost" onclick="doClear()" style="margin-top:12px;color:#ff6060;border-color:#7a1a1a">🗑 Clear All</button>
+  </div>
+</div>
+
+</div>
 <script>
-const TOTAL_Q = 10;
+// ── Firebase ────────────────────────────────────────────────────
+const FB_CFG = {
+  apiKey:"AIzaSyByMTnOcOyXM11rSGj7YHpJ5rRaSgvLB2o",
+  authDomain:"pfund-lissana-gaha-game.firebaseapp.com",
+  databaseURL:"https://pfund-lissana-gaha-game-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"pfund-lissana-gaha-game",
+  appId:"1:693146425683:web:6577342f4bafbbdda429a6"
+};
+const ADMIN={u:"PFUND",p:"avurudu"};
+const TOTAL_Q=10;
 
-const QS = [
-{q:"1+1=?",o:["1","2","3"],a:1},
-{q:"2+2=?",o:["2","4","5"],a:1},
-{q:"3+3=?",o:["6","7","8"],a:0},
-{q:"4+4=?",o:["6","8","9"],a:1},
-{q:"5+5=?",o:["10","11","12"],a:0},
-{q:"6+6=?",o:["11","12","13"],a:1},
-{q:"7+7=?",o:["14","15","16"],a:0},
-{q:"8+8=?",o:["15","16","17"],a:1},
-{q:"9+9=?",o:["18","19","20"],a:0},
-{q:"10+10=?",o:["19","20","21"],a:1}
+// ── Questions ───────────────────────────────────────────────────
+const QS=[
+  {q:"ජනාධිපති අරමුදලේ වෛද්‍යාධාර ක්‍රමපත්‍ර ගොනු කිරීම සඳහා නිල website ලිපිනය කුමක්ද?",o:["www.presidentfund.gov.lk","www.presidentsfund.gov.lk","www.pfund.lk","www.presidentfund.lk"],a:1},
+  {q:"වෛද්‍යාධාර ඉල්ලුම් ගොනු කළ යුතු නිල email ලිපිනය:",o:["fundsecretary@presidentsoffice.lk","medpay.prefund@presidentsoffice.lk","info@pfund.lk","appeal@presidentsoffice.lk"],a:1},
+  {q:"CABG ශල්‍යකර්මය සඳහා ජනාධිපති අරමුදලින් ලබාදෙන මුදල:",o:["රු. 150,000","රු. 200,000","රු. 250,000","රු. 300,000"],a:3},
+  {q:"ජීවනෝපාය රැකියාවක් සඳහා ගොනු ලේඛනය 17 ලෙස ඉදිරිපත් කළ යුතු ලේඛනය:",o:["රැකියාව කරන ස්ථානයේ ඡායාරූප","වෘත්තීය නිපුණතාව සහ මිල ඇස්තමේන්තුව","ග්‍රාම නිලධාරී සහතිකය","වෙනත් රැකියා නොකරන බවට සහතිකය"],a:1},
+  {q:"වෘත්තීය පුහුණු පාඨමාලාවක් සඳහා ඉදිරිපත් කළ යුතු ලේඛනය:",o:["පාසල් අස්වීමේ සහතිකය","උසස් පෙළ ප්‍රතිඵල සටහන","වෘත්තීය ආයතනයෙන් ලිපිය (ගාස්තු සහිතව)","විශ්වවිද්‍යාල ප්‍රවේශ ලිපිය"],a:2},
+  {q:"පාසල් දරුවෙකුට අධ්‍යාපන ආධාර සඳහා ලිපිය ලබා ගත යුත්තේ:",o:["ග්‍රාම නිලධාරීගෙන්","ප්‍රාදේශීය ලේකම්ගෙන්","පාසලේ විදුහල්පතිගෙන්","කලාප අධ්‍යක්ෂගෙන්"],a:2},
+  {q:"ස්ටෙන්ට් 2ක් භාවිත PTCA ප්‍රතිකාර සඳහා ලබාදෙන මුදල:",o:["රු. 200,000","රු. 250,000","රු. 350,000","රු. 300,000"],a:2},
+  {q:"Total Hip Replacement (දෙපස) සඳහා ලබාදෙන මුදල:",o:["රු. 150,000","රු. 175,000","රු. 300,000","රු. 350,000"],a:3},
+  {q:"ධීවර අධ්‍යාපන ආධාර සඳහා ආදායම් සහතිකය ලබා ගත යුත්තේ:",o:["ප්‍රාදේශීය ලේකම්ගෙන්","ග්‍රාම නිලධාරීගෙන්","විදුහල්පතිගෙන්","සමෘද්ධි නිලධාරීගෙන්"],a:1},
+  {q:"වෛද්‍ය ඇස්තමේන්තු වල වලංගු කාලය (validity period):",o:["මාස 01","මාස 03","මාස 06","මාස 12"],a:2}
 ];
 
-let G = {qi:0, score:0, pos:0};
+// ── State ───────────────────────────────────────────────────────
+let G={name:'',qi:0,score:0};
+let charPos=0, charTarget=0, charMood='neutral';
+let animId=null;
+let PL=[], fbDb=null, fbRef=null;
+let confettiParticles=[];
 
+// ── Firebase ────────────────────────────────────────────────────
+function initFB(){
+  try{
+    firebase.initializeApp(FB_CFG);
+    fbDb=firebase.database();
+    fbRef=fbDb.ref('pfund_ulela_v2/players');
+    document.getElementById('w-mode').textContent='🌐 Online Mode Ready';
+  }catch(e){
+    document.getElementById('w-mode').textContent='📱 Local Mode';
+  }
+}
+async function loadPL(){
+  if(fbRef){
+    const snap=await fbRef.once('value');
+    const d=snap.val();
+    PL=d?Object.values(d):[];
+    PL.sort((a,b)=>b.score-a.score);
+  }
+}
+async function savePL(entry){
+  const key=entry.name.toLowerCase().replace(/[^a-z0-9]/g,'_');
+  if(fbRef) await fbRef.child(key).set(entry);
+}
+
+// ── Navigation ──────────────────────────────────────────────────
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('sc-'+id).classList.add('on');
+  if(id==='w'){charPos=0;charTarget=0;charMood='neutral';drawWelcome();}
+  if(id==='lb') loadPL().then(renderLB);
+  if(id==='r') drawResult();
+}
+
+// ── Game logic ──────────────────────────────────────────────────
 function startGame(){
-  document.getElementById('start').style.display='none';
-  document.getElementById('game').style.display='block';
+  const n=document.getElementById('inp-n').value.trim();
+  if(!n){document.getElementById('n-err').style.display='block';return;}
+  document.getElementById('n-err').style.display='none';
+  G={name:n,qi:0,score:0};
+  charPos=0;charTarget=0;charMood='neutral';
+  goTo('g');
   renderQ();
 }
 
 function renderQ(){
-  let q = QS[G.qi];
-  document.getElementById('q').textContent = q.q;
-  document.getElementById('score').textContent = "Score: "+G.score;
-
-  let opts = document.getElementById('opts');
-  opts.innerHTML='';
-
+  const q=QS[G.qi];
+  document.getElementById('g-sub').textContent=`ප්‍රශ්නය ${G.qi+1} / ${TOTAL_Q}`;
+  document.getElementById('q-txt').textContent=q.q;
+  document.getElementById('pbar').style.width=(G.qi/TOTAL_Q*100)+'%';
+  document.getElementById('pole-score').textContent=G.score+'/'+TOTAL_Q;
+  const od=document.getElementById('q-opts');
+  od.innerHTML='';
   q.o.forEach((o,i)=>{
-    let b = document.createElement('button');
+    const b=document.createElement('button');
     b.className='opt';
     b.textContent=o;
-    b.onclick=()=>answer(i);
-    opts.appendChild(b);
+    b.onclick=()=>answerQ(i);
+    od.appendChild(b);
   });
-
-  draw();
+  document.getElementById('btn-nxt').style.display='none';
+  drawGamePole();
 }
 
-function answer(i){
-  let correct = i===QS[G.qi].a;
-
+function answerQ(idx){
+  const q=QS[G.qi];
+  const correct=idx===q.a;
   if(correct){
     G.score++;
-    animateMove(G.pos+1);
+    charTarget=Math.min(10,charTarget+1);
+    charMood='up';
   } else {
-    animateMove(Math.max(0,G.pos-1));
+    charTarget=Math.max(0,charTarget-1);
+    charMood='down';
   }
-
-  document.querySelectorAll('.opt').forEach((b,idx)=>{
+  document.querySelectorAll('.opt').forEach((b,i)=>{
     b.disabled=true;
-    if(idx===QS[G.qi].a) b.classList.add('ok');
-    else if(idx===i) b.classList.add('no');
+    if(i===q.a) b.classList.add('ok');
+    else if(i===idx) b.classList.add('no');
   });
-
-  document.getElementById('next').style.display='block';
+  document.getElementById('btn-nxt').style.display='block';
+  document.getElementById('pole-score').textContent=G.score+'/'+TOTAL_Q;
+  startAnim('cv-g');
 }
 
-function nextQ(){
+async function nextQ(){
   G.qi++;
-  document.getElementById('next').style.display='none';
-
+  charMood='neutral';
   if(G.qi>=TOTAL_Q){
-    document.getElementById('game').style.display='none';
-    document.getElementById('end').style.display='block';
-    document.getElementById('final').textContent="Final Score: "+G.score;
-  } else renderQ();
+    const entry={name:G.name,score:G.score,date:new Date().toLocaleDateString()};
+    await savePL(entry);
+    goTo('r');
+  } else {
+    renderQ();
+  }
 }
 
-function animateMove(target){
-  let start = G.pos;
-  let diff = target-start;
-  let step = 0;
+// ── Animation ───────────────────────────────────────────────────
+function startAnim(cvId){
+  if(animId) cancelAnimationFrame(animId);
+  animStep(cvId);
+}
+function animStep(cvId){
+  const diff=charTarget-charPos;
+  if(Math.abs(diff)>0.009){
+    charPos+=diff*0.07;
+    if(cvId==='cv-g') drawGamePole();
+    animId=requestAnimationFrame(()=>animStep(cvId));
+  } else {
+    charPos=charTarget;
+    if(cvId==='cv-g') drawGamePole();
+    animId=null;
+  }
+}
 
-  function anim(){
-    step += 0.1;
-    if(step>=1){
-      G.pos = target;
-      draw();
-      return;
-    }
-    G.pos = start + diff*step;
-    draw();
-    requestAnimationFrame(anim);
+// ── Core Drawing ────────────────────────────────────────────────
+function drawPole(ctx, W, H, pos, mood, compact){
+  ctx.clearRect(0,0,W,H);
+
+  // Dark background
+  const bg=ctx.createLinearGradient(0,0,W,0);
+  bg.addColorStop(0,'#1a0c14');
+  bg.addColorStop(1,'#2a1220');
+  ctx.fillStyle=bg;
+  ctx.fillRect(0,0,W,H);
+
+  const poleX=compact ? Math.round(W*0.68) : Math.round(W*0.6);
+  const poleTop=compact ? 24 : 30;
+  const poleBot=H-20;
+  const poleH=poleBot-poleTop;
+  const segH=poleH/10;
+  const pW=compact?10:12;
+
+  // Glow behind pole for reached levels
+  if(pos>0){
+    const glowH=Math.min(pos/10*poleH,poleH);
+    const gGrad=ctx.createLinearGradient(0,poleBot-glowH,0,poleBot);
+    gGrad.addColorStop(0,'rgba(255,215,0,0)');
+    gGrad.addColorStop(1,'rgba(255,215,0,0.06)');
+    ctx.fillStyle=gGrad;
+    ctx.fillRect(0,poleBot-glowH,W,glowH);
   }
 
-  anim();
-}
-
-function draw(){
-  let c = document.getElementById('cv');
-  let ctx = c.getContext('2d');
-  ctx.clearRect(0,0,80,300);
-
-  // pole
-  ctx.fillStyle="brown";
-  ctx.fillRect(35,20,10,260);
-
-  let stepH = 260/TOTAL_Q;
-  let y = 280 - (G.pos*stepH);
-
-  ctx.fillStyle="yellow";
-
-  // head
+  // Ground base
+  ctx.fillStyle='#3a1a05';
+  const baseW=pW+14;
   ctx.beginPath();
-  ctx.arc(40,y,5,0,Math.PI*2);
+  ctx.ellipse(poleX,poleBot+5,baseW/2,6,0,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle='#5a2e10';
+  ctx.beginPath();
+  ctx.ellipse(poleX,poleBot+5,baseW/2-2,4,0,0,Math.PI*2);
   ctx.fill();
 
-  // body
-  ctx.fillRect(38,y+5,4,10);
+  // Pole shadow
+  ctx.fillStyle='rgba(0,0,0,0.5)';
+  ctx.fillRect(poleX-pW/2+3,poleTop,pW,poleH);
 
-  // arms
-  ctx.beginPath();
-  ctx.moveTo(38,y+8);
-  ctx.lineTo(30,y+12);
-  ctx.moveTo(42,y+8);
-  ctx.lineTo(50,y+12);
-  ctx.strokeStyle="yellow";
-  ctx.stroke();
+  // Pole body
+  const pGrad=ctx.createLinearGradient(poleX-pW/2,0,poleX+pW/2,0);
+  pGrad.addColorStop(0,'#3d1a05');
+  pGrad.addColorStop(0.2,'#7a4010');
+  pGrad.addColorStop(0.45,'#C47830');
+  pGrad.addColorStop(0.6,'#A05820');
+  pGrad.addColorStop(0.85,'#6B3010');
+  pGrad.addColorStop(1,'#3d1a05');
+  ctx.fillStyle=pGrad;
+  ctx.fillRect(poleX-pW/2,poleTop,pW,poleH);
 
-  // legs
+  // Pole highlight stripe
+  ctx.fillStyle='rgba(255,210,120,0.18)';
+  ctx.fillRect(poleX-1,poleTop,3,poleH);
+
+  // Bamboo rings at each segment
+  for(let i=0;i<=10;i++){
+    const y=Math.round(poleBot-i*segH);
+    const reached=i<=pos;
+
+    // Ring on pole
+    const rGrad=ctx.createLinearGradient(poleX-pW/2,0,poleX+pW/2,0);
+    rGrad.addColorStop(0,'#2a0d00');
+    rGrad.addColorStop(0.5,reached?'#B8860B':'#4a2a0a');
+    rGrad.addColorStop(1,'#2a0d00');
+    ctx.fillStyle=rGrad;
+    ctx.fillRect(poleX-pW/2-1,y-2,pW+2,4);
+
+    // Level marker line (left side)
+    ctx.strokeStyle=reached?'rgba(255,215,0,0.7)':'rgba(255,255,255,0.12)';
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(poleX-pW/2-1,y);
+    ctx.lineTo(poleX-pW/2-8,y);
+    ctx.stroke();
+
+    // Level dot
+    if(i>0){
+      ctx.fillStyle=reached?'#FFD700':'rgba(255,255,255,0.15)';
+      ctx.beginPath();
+      ctx.arc(poleX-pW/2-12,y,reached?3:2,0,Math.PI*2);
+      ctx.fill();
+
+      // Number (only if not compact)
+      if(!compact){
+        ctx.fillStyle=reached?'#FFD700':'rgba(255,255,255,0.2)';
+        ctx.font=(reached?'bold ':'')+'9px sans-serif';
+        ctx.textAlign='right';
+        ctx.fillText(i,poleX-pW/2-17,y+3);
+      }
+    }
+  }
+
+  // Top cap
+  const capGrad=ctx.createRadialGradient(poleX-1,poleTop-7,0,poleX,poleTop-7,10);
+  capGrad.addColorStop(0,'#FFEE88');
+  capGrad.addColorStop(0.5,'#FFD700');
+  capGrad.addColorStop(1,'#C8A000');
+  ctx.fillStyle=capGrad;
   ctx.beginPath();
-  ctx.moveTo(38,y+15);
-  ctx.lineTo(32,y+22);
-  ctx.moveTo(42,y+15);
-  ctx.lineTo(48,y+22);
+  ctx.arc(poleX,poleTop-7,9,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle='#8D153A';
+  ctx.lineWidth=1.5;
   ctx.stroke();
+  ctx.fillStyle='#8D153A';
+  ctx.font='bold 9px sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText('★',poleX,poleTop-4);
+
+  // Draw character
+  const charY=poleBot-pos*segH;
+  drawCharacter(ctx,poleX,charY,mood,compact);
 }
-</script>
 
+function drawCharacter(ctx, poleX, y, mood, compact){
+  const scale=compact?0.88:1;
+  const cx=poleX-(compact?18:22);
+  const sc=scale;
+
+  // ─── Legs ───
+  ctx.strokeStyle='#1a0832';
+  ctx.lineWidth=3.5*sc;
+  ctx.lineCap='round';
+  if(mood==='up'){
+    // Climbing: knees up
+    ctx.beginPath();
+    ctx.moveTo(cx,y+8*sc);
+    ctx.lineTo(cx-5*sc,y+20*sc);
+    ctx.lineTo(cx-2*sc,y+30*sc);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx,y+8*sc);
+    ctx.lineTo(cx+6*sc,y+16*sc);
+    ctx.lineTo(poleX-3,y+12*sc); // foot hooks pole
+    ctx.stroke();
+    // Foot grip circle
+    ctx.fillStyle='#1a0832';
+    ctx.beginPath();
+    ctx.arc(poleX-3,y+12*sc,3.5*sc,0,Math.PI*2);
+    ctx.fill();
+  } else if(mood==='down'){
+    // Sliding: legs splayed out
+    ctx.beginPath();
+    ctx.moveTo(cx,y+8*sc);
+    ctx.lineTo(cx-9*sc,y+22*sc);
+    ctx.lineTo(cx-13*sc,y+32*sc);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx,y+8*sc);
+    ctx.lineTo(cx+7*sc,y+20*sc);
+    ctx.lineTo(cx+5*sc,y+30*sc);
+    ctx.stroke();
+  } else {
+    // Neutral: hanging
+    ctx.beginPath();
+    ctx.moveTo(cx,y+8*sc);
+    ctx.lineTo(cx-3*sc,y+22*sc);
+    ctx.lineTo(cx-1*sc,y+30*sc);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx,y+8*sc);
+    ctx.lineTo(cx+5*sc,y+20*sc);
+    ctx.lineTo(poleX-4,y+24*sc);
+    ctx.stroke();
+  }
+
+  // ─── Body ───
+  const bx=cx-10*sc, by=y-15*sc, bw=20*sc, bh=23*sc;
+  // Body shadow
+  ctx.fillStyle='rgba(0,0,0,0.25)';
+  ctx.beginPath();
+  ctx.roundRect(bx+2,by+2,bw,bh,4*sc);
+  ctx.fill();
+  // Shirt (dark red)
+  ctx.fillStyle='#8D153A';
+  ctx.beginPath();
+  ctx.roundRect(bx,by,bw,bh,4*sc);
+  ctx.fill();
+  // Gold collar
+  ctx.fillStyle='#D4A800';
+  ctx.fillRect(bx,by,bw,4*sc);
+  ctx.beginPath();
+  ctx.roundRect(bx,by,bw,4*sc,{upperLeft:4*sc,upperRight:4*sc,lowerLeft:0,lowerRight:0});
+  ctx.fill();
+
+  // ─── Arms ───
+  ctx.strokeStyle='#d4935a';
+  ctx.lineWidth=4*sc;
+  ctx.lineCap='round';
+  if(mood==='up'){
+    // Reaching up high on pole
+    ctx.beginPath();
+    ctx.moveTo(cx+9*sc,y-10*sc);
+    ctx.quadraticCurveTo(poleX-2,y-14*sc,poleX-2,y-19*sc);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx+9*sc,y-3*sc);
+    ctx.quadraticCurveTo(poleX-2,y-7*sc,poleX-2,y-11*sc);
+    ctx.stroke();
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(cx+9*sc,y-8*sc);
+    ctx.quadraticCurveTo(poleX-3,y-10*sc,poleX-3,y-8*sc);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx+9*sc,y-1*sc);
+    ctx.quadraticCurveTo(poleX-3,y-3*sc,poleX-3,y-1*sc);
+    ctx.stroke();
+  }
+
+  // ─── Hands ───
+  ctx.fillStyle='#d4935a';
+  if(mood==='up'){
+    ctx.beginPath();ctx.arc(poleX-2,y-19*sc,4*sc,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(poleX-2,y-11*sc,4*sc,0,Math.PI*2);ctx.fill();
+    // Knuckle lines
+    ctx.strokeStyle='#b87030';
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.arc(poleX-2,y-19*sc,4*sc,Math.PI*0.3,Math.PI*0.7);ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(poleX-2,y-11*sc,4*sc,Math.PI*0.3,Math.PI*0.7);ctx.stroke();
+  } else {
+    ctx.beginPath();ctx.arc(poleX-3,y-8*sc,4*sc,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(poleX-3,y-1*sc,4*sc,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#b87030';
+    ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(poleX-3,y-8*sc,4*sc,Math.PI*0.3,Math.PI*0.7);ctx.stroke();
+    ctx.beginPath();ctx.arc(poleX-3,y-1*sc,4*sc,Math.PI*0.3,Math.PI*0.7);ctx.stroke();
+  }
+
+  // ─── Head ───
+  const hx=cx, hy=y-24*sc, hr=11*sc;
+  // Hair
+  ctx.fillStyle='#1a0800';
+  ctx.beginPath();
+  ctx.arc(hx,hy,hr+1,Math.PI,0,false);
+  ctx.fill();
+  // Hair highlight
+  ctx.fillStyle='#2e1000';
+  ctx.beginPath();
+  ctx.arc(hx-2*sc,hy-2*sc,hr*0.7,Math.PI+0.3,-0.1,false);
+  ctx.fill();
+
+  // Face skin
+  const skinG=ctx.createRadialGradient(hx-2*sc,hy-2*sc,1,hx,hy,hr);
+  skinG.addColorStop(0,'#F8D090');
+  skinG.addColorStop(0.7,'#E8A860');
+  skinG.addColorStop(1,'#C88040');
+  ctx.fillStyle=skinG;
+  ctx.beginPath();
+  ctx.arc(hx,hy,hr,0,Math.PI*2);
+  ctx.fill();
+
+  // ─── Eyes ───
+  if(mood==='up'){
+    // Happy crescent eyes
+    ctx.strokeStyle='#2a1000';
+    ctx.lineWidth=2*sc;
+    ctx.beginPath();
+    ctx.arc(hx-3.5*sc,hy-1*sc,3*sc,Math.PI+0.3,-0.3,false);ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(hx+3.5*sc,hy-1*sc,3*sc,Math.PI+0.3,-0.3,false);ctx.stroke();
+    // Shine
+    ctx.fillStyle='rgba(255,255,255,0.8)';
+    ctx.beginPath();ctx.arc(hx-2*sc,hy-3*sc,1.2*sc,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(hx+5*sc,hy-3*sc,1.2*sc,0,Math.PI*2);ctx.fill();
+  } else if(mood==='down'){
+    // Sad eyes with brows furrowed
+    ctx.fillStyle='#2a1000';
+    ctx.beginPath();ctx.arc(hx-3.5*sc,hy-1*sc,2.5*sc,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(hx+3.5*sc,hy-1*sc,2.5*sc,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.7)';
+    ctx.beginPath();ctx.arc(hx-2*sc,hy-2.5*sc,1*sc,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(hx+5*sc,hy-2.5*sc,1*sc,0,Math.PI*2);ctx.fill();
+    // Furrowed brows
+    ctx.strokeStyle='#2a1000';
+    ctx.lineWidth=2*sc;
+    ctx.beginPath();ctx.moveTo(hx-7*sc,hy-5*sc);ctx.lineTo(hx-1*sc,hy-6.5*sc);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(hx+1*sc,hy-6.5*sc);ctx.lineTo(hx+7*sc,hy-5*sc);ctx.stroke();
+  } else {
+    ctx.fillStyle='#2a1000';
+    ctx.beginPath();ctx.arc(hx-3.5*sc,hy-1*sc,2.5*sc,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(hx+3.5*sc,hy-1*sc,2.5*sc,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.7)';
+    ctx.beginPath();ctx.arc(hx-2*sc,hy-2.5*sc,1*sc,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(hx+5*sc,hy-2.5*sc,1*sc,0,Math.PI*2);ctx.fill();
+  }
+
+  // ─── Mouth ───
+  ctx.strokeStyle='rgba(80,30,0,0.9)';
+  ctx.lineWidth=1.8*sc;
+  ctx.lineCap='round';
+  ctx.beginPath();
+  if(mood==='up'){
+    ctx.arc(hx,hy+3.5*sc,4*sc,0.15,Math.PI-0.15);
+    ctx.stroke();
+    // Cheek blush
+    ctx.fillStyle='rgba(255,100,80,0.3)';
+    ctx.beginPath();ctx.ellipse(hx-7*sc,hy+3*sc,3.5*sc,2.5*sc,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(hx+7*sc,hy+3*sc,3.5*sc,2.5*sc,0,0,Math.PI*2);ctx.fill();
+  } else if(mood==='down'){
+    ctx.arc(hx,hy+7*sc,4*sc,Math.PI+0.3,-0.3);
+    ctx.stroke();
+    // Sweat drop
+    ctx.fillStyle='#7DC8FF';
+    ctx.beginPath();
+    ctx.arc(hx+12*sc,hy-5*sc,3*sc,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(hx+12*sc,hy-2*sc);
+    ctx.lineTo(hx+9.5*sc,hy+4*sc);
+    ctx.lineTo(hx+14.5*sc,hy+4*sc);
+    ctx.closePath();ctx.fill();
+  } else {
+    ctx.moveTo(hx-3*sc,hy+4*sc);ctx.lineTo(hx+3*sc,hy+4*sc);
+    ctx.stroke();
+  }
+
+  // ─── Sparkles when going up ───
+  if(mood==='up'){
+    ctx.fillStyle='#FFD700';
+    const t=Date.now()/400;
+    const sparks=[
+      {x:cx-18*sc,y:y-32*sc,r:5,phase:0},
+      {x:cx-22*sc,y:y-18*sc,r:4,phase:1.5},
+      {x:cx-14*sc,y:y-40*sc,r:3.5,phase:0.8},
+    ];
+    sparks.forEach(s=>{
+      const pulse=0.7+0.3*Math.sin(t+s.phase);
+      ctx.globalAlpha=pulse;
+      ctx.font=`${s.r*3}px serif`;
+      ctx.textAlign='center';
+      ctx.fillText('✦',s.x,s.y);
+    });
+    ctx.globalAlpha=1;
+  }
+}
+
+// ── Screen draw functions ───────────────────────────────────────
+function drawWelcome(){
+  const cv=document.getElementById('cv-w');
+  drawPole(cv.getContext('2d'),cv.width,cv.height,0,'neutral',false);
+}
+
+function drawGamePole(){
+  const cv=document.getElementById('cv-g');
+  if(!cv) return;
+  drawPole(cv.getContext('2d'),cv.width,cv.height,charPos,charMood,true);
+}
+
+function drawResult(){
+  const cv=document.getElementById('cv-r');
+  const finalPos=G.score;
+  charPos=finalPos; charTarget=finalPos;
+  const mood=G.score>=7?'up':G.score>=4?'neutral':'down';
+  drawPole(cv.getContext('2d'),cv.width,cv.height,finalPos,mood,false);
+  document.getElementById('r-nm').textContent=G.name;
+  document.getElementById('r-sc').textContent=G.score+'/10';
+  const msgs=['💪 ප්‍රශ්න නැවත කියවන්න!','💪 ප්‍රශ්න නැවත කියවන්න!',
+    '💪 ප්‍රශ්න නැවත කියවන්න!','💪 ප්‍රශ්න නැවත කියවන්න!',
+    '👍 දිගටම උත්සාහ කරන්න!','👍 දිගටම උත්සාහ කරන්න!',
+    '🌟 හොඳ කාර්යයක්!','🌟 හොඳ කාර්යයක්!',
+    '🏆 අසාමාන්‍ය ජයග්‍රහණය!','🏆 අසාමාන්‍ය ජයග්‍රහණය!','🏅 Perfect Score! '];
+  document.getElementById('r-msg').textContent=msgs[G.score]||'';
+}
+
+// ── Leaderboard ─────────────────────────────────────────────────
+function renderLB(){
+  const medals=['🥇','🥈','🥉'];
+  const rows=PL.map((p,i)=>`
+    <tr>
+      <td style="font-size:16px">${medals[i]||(i+1)}</td>
+      <td>${p.name}</td>
+      <td style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold)">
+        ${p.score}<span style="font-size:11px;color:var(--txt2)">/10</span>
+      </td>
+    </tr>`).join('');
+  document.getElementById('lb-wrap').innerHTML=`
+    <table class="lbt">
+      <thead><tr><th>#</th><th>නම</th><th>ලකුණු</th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="3" style="text-align:center;color:var(--txt2);padding:20px">තවම ක්‍රීඩකයන් නැත</td></tr>'}</tbody>
+    </table>`;
+}
+
+// ── Admin ────────────────────────────────────────────────────────
+function doLogin(){
+  if(document.getElementById('adm-u').value===ADMIN.u &&
+     document.getElementById('adm-p').value===ADMIN.p){
+    document.getElementById('adm-lgn').style.display='none';
+    document.getElementById('adm-dsh').style.display='block';
+    loadPL().then(()=>{
+      document.getElementById('adm-tb').innerHTML=PL.map(p=>
+        `<tr><td>${p.name}</td><td>${p.score}</td><td>${p.date||'-'}</td></tr>`).join('');
+    });
+  }
+}
+async function doClear(){
+  if(!confirm('Clear all scores?')) return;
+  if(fbRef) await fbRef.remove();
+  PL=[];
+  document.getElementById('adm-tb').innerHTML='';
+}
+
+// ── roundRect polyfill ──────────────────────────────────────────
+if(!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+    const rad=typeof r==='number'?r:4;
+    this.beginPath();
+    this.moveTo(x+rad,y);
+    this.lineTo(x+w-rad,y);this.quadraticCurveTo(x+w,y,x+w,y+rad);
+    this.lineTo(x+w,y+h-rad);this.quadraticCurveTo(x+w,y+h,x+w-rad,y+h);
+    this.lineTo(x+rad,y+h);this.quadraticCurveTo(x,y+h,x,y+h-rad);
+    this.lineTo(x,y+rad);this.quadraticCurveTo(x,y,x+rad,y);
+    this.closePath();
+    return this;
+  };
+}
+
+// ── Init ─────────────────────────────────────────────────────────
+initFB();
+loadPL().then(drawWelcome);
+</script>
 </body>
 </html>
